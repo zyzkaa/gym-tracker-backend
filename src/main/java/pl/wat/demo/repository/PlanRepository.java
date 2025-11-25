@@ -14,4 +14,6 @@ public interface PlanRepository extends JpaRepository<Plan, Integer> {
     List<Plan> findPlansByAuthorId(UUID authorId);
 
     List<Plan> findAllByNameContainingIgnoreCase(@NotBlank String name);
+
+    List<Plan> findAllByIsPublicTrueAndNameContainingIgnoreCase(@NotBlank String name);
 }

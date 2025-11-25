@@ -24,6 +24,7 @@ public class DayMapper {
 
         return new DayResponse(
                 day.getName(),
+                day.getId(),
                 (day.getWeekday() == null) ? null : day.getWeekday().getId() - 1,
                 exercises
         );

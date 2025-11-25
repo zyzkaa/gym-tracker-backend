@@ -1,21 +1,20 @@
 package pl.wat.demo.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import pl.wat.demo.dto.ExerciseDataResponse;
+import pl.wat.demo.dto.ExerciseDetails;
 import pl.wat.demo.dto.ExerciseSearchRequest;
+import pl.wat.demo.mapper.ExerciseMapper;
 import pl.wat.demo.mapper.WorkoutMapper;
-import pl.wat.demo.model.Exercise;
-import pl.wat.demo.model.Muscle;
-import pl.wat.demo.model.User;
-import pl.wat.demo.model.WorkoutExercise;
-import pl.wat.demo.repository.ExerciseRepository;
-import pl.wat.demo.repository.MuscleRepository;
-import pl.wat.demo.repository.UserRepository;
-import pl.wat.demo.repository.WorkoutExerciseRepository;
+import pl.wat.demo.model.*;
+import pl.wat.demo.repository.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,6 +24,8 @@ public class ExerciseService {
     private final UserRepository userRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
     private final WorkoutMapper workoutMapper;
+    private final WorkoutRepository workoutRepository;
+    private final ExerciseMapper exerciseMapper;
 
     public List<Muscle> getMuscles() {
         return musicleRepository.findAll();
@@ -53,6 +54,18 @@ public class ExerciseService {
         User user = userRepository.findById(userId).orElseThrow();
         List<WorkoutExercise> records = workoutExerciseRepository.findAllRecords(user, exerciseId);
         return workoutMapper.toExerciseDataList(records);
+    }
+
+    public List<Exercise> getLatestExercises(String userId) {
+        int maxExercises = 10;
+        UUID uuid = UUID.fromString(userId);
+        List<Workout> lastWorkouts = workoutRepository.findAllByUserId(uuid, PageRequest.of(0, 10, Sort.by("date").descending())).getContent();
+        List<Exercise> exercises = lastWorkouts.stream().flatMap(w -> w.getExercises().stream().map(we -> we.getExercise())).collect(Collectors.toSet()).stream().toList();
+        return exercises.subList(0, Math.min(exercises.size(), 10));
+    }
+
+    public ExerciseDetails getExerciseDetails(int exerciseId) {
+        return exerciseMapper.toExerciseDetails(exerciseRepository.findById(exerciseId).orElseThrow());
     }
 
 }

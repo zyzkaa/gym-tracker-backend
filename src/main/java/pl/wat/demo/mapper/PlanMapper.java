@@ -63,7 +63,7 @@ public class PlanMapper {
                 plan.getDescription(),
                 userMapper.toResponse(plan.getAuthor()),
                 plan.isPublic(),
-                userId.equals(plan.getAuthor().getId()),
+                userId != null && userId.equals(plan.getAuthor().getId()),
                 days
         );
     }

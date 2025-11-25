@@ -10,4 +10,5 @@ import java.util.UUID;
 
 public interface WorkoutRepository extends JpaRepository<Workout, Integer> {
     Page<Workout> findAllByUserId(UUID userId, Pageable pageable);
+    List<Workout> findAllByUserId(UUID userId);
 }

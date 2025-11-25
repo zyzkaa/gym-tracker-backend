@@ -29,4 +29,12 @@ public class Exercise {
     )
 
     private List<Muscle> muscles;
+
+    @Lob
+    @Column(columnDefinition = "TEXT", nullable = true)
+    @JsonIgnore
+    private String description;
+
+    @JsonIgnore
+    private String image;
 }

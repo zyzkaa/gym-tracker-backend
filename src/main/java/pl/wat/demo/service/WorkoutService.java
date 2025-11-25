@@ -42,7 +42,7 @@ public class WorkoutService {
 
     public int addWorkout(String userId, WorkoutRequest workoutRequest){
         User user = userRepository.findById(UUID.fromString(userId)).orElseThrow();
-        Day day = dayRepository.findById(workoutRequest.dayId()).orElseThrow();
+        Day day = (workoutRequest.dayId() == null) ? null : dayRepository.findById(workoutRequest.dayId()).orElseThrow();
         Set<Integer> exerciseIds = workoutRequest.exercises().stream().map(WorkoutRequest.Exercise::id).collect(Collectors.toSet());
         List<Exercise> exercises = exerciseRepository.findAllById(exerciseIds);
         Map<Integer, Exercise> exercisesById = exercises.stream()

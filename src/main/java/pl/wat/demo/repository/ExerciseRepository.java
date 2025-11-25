@@ -1,5 +1,6 @@
 package pl.wat.demo.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,6 +10,7 @@ import pl.wat.demo.model.User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface ExerciseRepository extends JpaRepository<Exercise, Integer> {
@@ -47,4 +49,5 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Integer> {
   """)
     List<Exercise> findAllRecordedByUser(
             @Param("user") User user);
+
 }

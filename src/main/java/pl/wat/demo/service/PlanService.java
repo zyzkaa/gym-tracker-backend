@@ -13,6 +13,7 @@ import pl.wat.demo.repository.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -50,24 +51,38 @@ public class PlanService {
                         user.getSavedPlans().stream()
                 )
                 .toList();
-        List<ShortPlanResponse> planss = planMapper.toShortPlanList(plans);
-        planss.forEach(p -> p.days().forEach( d -> System.out.println(d.name())));
-        return planss;
+        return planMapper.toShortPlanList(plans);
     }
 
     public PlanResponse getPlanDetails(int planId, String userId) {
+        UUID uuid = (userId == null) ? null : UUID.fromString(userId);
         Plan plan = planRepository.findById(planId).orElseThrow();
-        if(plan.isPublic() || plan.getAuthor().getId().toString().equals(userId)) return planMapper.toResponse(plan, UUID.fromString(userId));
+        if(plan.isPublic() || plan.getAuthor().getId().equals(uuid)) return planMapper.toResponse(plan, uuid);
         else throw new IllegalArgumentException();
     }
 
-    public List<ShortPlanResponse> searchPlans(String search) {
-        return planMapper.toShortPlanList(planRepository.findAllByNameContainingIgnoreCase(search));
+    public List<ShortPlanResponse> searchPlans(String search, String userId) {
+        var plans = planRepository.findAllByIsPublicTrueAndNameContainingIgnoreCase(search);
+        if(userId == null) {
+            System.out.println("early return");
+            return planMapper.toShortPlanList(plans);
+        }
+        UUID uuid = UUID.fromString(userId);
+        User user = userRepository.findById(uuid).orElseThrow();
+        List<Integer> userPlanIds = java.util.stream.Stream.concat(
+                        planRepository.findPlansByAuthorId(uuid).stream(),
+                        user.getSavedPlans().stream()
+                ).map(Plan::getId).toList();
+        System.out.println(userPlanIds);
+
+        return planMapper.toShortPlanList(plans.stream().filter(plan -> !userPlanIds.contains(plan.getId())).collect(Collectors.toList()));
     }
 
     public void deletePlan(int planId, String userId) {
         Plan plan = planRepository.findById(planId).orElseThrow();
+        System.out.println(plan.getAuthor().getUsername());
         if(plan.isPublic() || !plan.getAuthor().getId().toString().equals(userId)) return;
+        System.out.println("deleting plan");
         planRepository.deleteById(planId);
     }
 
@@ -87,7 +102,10 @@ public class PlanService {
         plan.setPublic(!plan.isPublic());
     }
 
-    public void generatePlan(PlanPreferenceRequest preferences, String userId) {
-
+    public void savePlan(int planId, String userId){
+        Plan plan = planRepository.findById(planId).orElseThrow();
+        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow();
+        user.getSavedPlans().add(plan);
+        userRepository.save(user);
     }
 }

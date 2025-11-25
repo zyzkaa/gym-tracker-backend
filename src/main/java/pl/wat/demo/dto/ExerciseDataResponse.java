@@ -1,7 +1,5 @@
 package pl.wat.demo.dto;
 
-import pl.wat.demo.model.WorkoutSet;
-
 import java.util.List;
 
 public record ExerciseDataResponse(
@@ -13,7 +11,7 @@ public record ExerciseDataResponse(
 
 ) {
     public record ExerciseDataSetResponse(
-            int number,
+            int order,
             int reps,
             double weight
     ) {}

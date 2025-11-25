@@ -10,6 +10,7 @@ import pl.wat.demo.dto.PlanResponse;
 import pl.wat.demo.dto.ShortPlanResponse;
 import pl.wat.demo.service.PlanService;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -31,11 +32,21 @@ public class PlanController {
 
     @GetMapping("/details/{planId}")
     public ResponseEntity<PlanResponse> getPlanDetails(@PathVariable int planId, @AuthenticationPrincipal Jwt jwt) {
-        return ResponseEntity.ok(planService.getPlanDetails(planId, jwt.getSubject()));
+        return ResponseEntity.ok(planService.getPlanDetails(planId, (jwt == null) ? null : jwt.getSubject()));
     }
 
     @DeleteMapping("/remove/{planId}")
     public void  deletePlan(@PathVariable int planId, @AuthenticationPrincipal Jwt jwt) {
         planService.deletePlan(planId, jwt.getSubject());
+    }
+
+    @GetMapping("/find/{search}")
+    public ResponseEntity<List<ShortPlanResponse>> findPlans(@PathVariable String search, @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(planService.searchPlans(search, (jwt == null) ? null : jwt.getSubject()));
+    }
+
+    @PostMapping("/save/{planId}")
+    public void savePlan(@PathVariable int planId, @AuthenticationPrincipal Jwt jwt){
+        planService.savePlan(planId, jwt.getSubject());
     }
 }
