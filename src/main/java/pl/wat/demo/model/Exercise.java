@@ -15,7 +15,13 @@ import java.util.List;
 @NoArgsConstructor
 public class Exercise {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(
+            name = "exercise_seq",
+            sequenceName = "exercise_sequence",
+            initialValue = 100,
+            allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "exercise_seq")
     private int id;
 
     @Column(nullable = false, unique = true)
@@ -30,7 +36,6 @@ public class Exercise {
 
     private List<Muscle> muscles;
 
-    @Lob
     @Column(columnDefinition = "TEXT", nullable = true)
     @JsonIgnore
     private String description;
