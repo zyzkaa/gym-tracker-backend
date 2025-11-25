@@ -1,6 +1,17 @@
 FROM eclipse-temurin:24-jdk AS build
 WORKDIR /app
 
+ARG DB_HOST
+ENV DB_HOST=${DB_HOST}
+ARG DB_NAME
+ENV DB_NAME=${DB_NAME}
+ARG DB_PASS
+ENV DB_PASS=${DB_PASS}
+ARG DB_PORT
+ENV DB_PORT=${DB_PORT}
+ARG DB_USER
+ENV DB_USER=${DB_USER}
+
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 RUN chmod +x mvnw
