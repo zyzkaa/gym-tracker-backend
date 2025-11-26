@@ -56,7 +56,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/test", "/user/**", "/plan/find/**", "/plan/details/**").permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/test",
+                                "/user/**",
+                                "/plan/find/**",
+                                "/plan/details/**",
+                                "/exercise/details/**",
+                                "/exercise/search").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()))
                 .build();
